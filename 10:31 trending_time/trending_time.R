@@ -25,15 +25,39 @@ df_growth = data.frame()
 for (id in pop_list){
   id_df = df_trend[df_trend$video_id == id, ]
   for (j in seq(2, dim(id_df)[1])){
-    df_growth <- rbind(df_growth, data.frame(id, table(data_frame$video_id)[[id]], 
+    df_growth <- rbind(df_growth, data.frame(id, id_df[j,'category_id'], table(data_frame$video_id)[[id]], 
                               (id_df[j, 'likes'] - id_df[j-1, 'likes']) / id_df[j-1, 'likes'], 
                               (id_df[j, 'comment_count'] - id_df[j-1, 'comment_count']) / id_df[j-1, 'comment_count'], 
                               (id_df[j, 'views'] - id_df[j-1, 'views']) / id_df[j-1, 'views'],
                               (id_df[j, 'LikeRatio'] - id_df[j-1, 'LikeRatio']) / id_df[j-1, 'LikeRatio']))
   }
 }
-colnames(df_growth) <- c('video_id', 'trending_days', 'Glikes', 'Gcomments', 'Gviews', 'GLikeRatio')
+colnames(df_growth) <- c('video_id', 'category','trending_days', 'Glikes', 'Gcomments', 'Gviews', 'GLikeRatio')
 
-plot(seq(1:9), df_g$Glikes, type="l")
+df_24 <- filter(df_growth, category == 24)
+d <- aggregate(df_24[, 3:6], list(df_24$video_id), min)
+mean(d$Gviews, na.rm = TRUE)
+cor(d$trending_days, d$GlikeRatio, use = "complete.obs")
+
+df_23 <- filter(df_growth, category == 23)
+d <- aggregate(df_23[, 3:6], list(df_23$video_id), min)
+mean(d$Gviews, na.rm = TRUE)
+mean(d$Glikes, na.rm = TRUE)
+
+df_10 <- filter(df_growth, category == 10)
+d <- aggregate(df_10[, 3:6], list(df_10$video_id), min)
+mean(d$Gviews, na.rm = TRUE)
+mean(d$Glikes, na.rm = TRUE)
+
+df_26 <- filter(df_growth, category == 26)
+d <- aggregate(df_26[, 3:6], list(df_26$video_id), min)
+mean(d$Gviews, na.rm = TRUE)
+mean(d$Glikes, na.rm = TRUE)
+
+plot(seq(1:13), df_g$Glikes, type="l")
+lines(seq(1:13), df_c$Gviews, col = 'blue')
 lines(seq(1:9),df_g$Gviews, col="red")
 lines(seq(1:9),df_g$Gcomments, col="green")
+lines(seq(1:13), df_c$Glikes, type="o")
+lines(seq(1:13), df_c$Gviews, col = 'black')
+lines(seq(1:13),df_c$Gcomments, col="purple")

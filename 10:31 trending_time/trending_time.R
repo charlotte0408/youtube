@@ -52,8 +52,11 @@ d_26 <- aggregate(df_26[, 3:6], list(df_26$video_id), min)
 Gviews26 <- mean(d_26$Gviews, na.rm = TRUE)
 Glikes26 <- mean(d_26$Glikes, na.rm = TRUE)
 
-final_num = melt(data.frame('Growth in Views'= c(Gviews24, Gviews10, Gviews26)*100, 'Growth in Likes'= c(Glikes24, Glikes10, Glikes26)*100,
+final_num = melt(data.frame('Growth in Views'= round(c(Gviews24, Gviews10, Gviews26)*100,2), 'Growth in Likes'= round(c(Glikes24, Glikes10, Glikes26)*100,2),
                      Category=c('Entertainment', 'Music', 'Howto&Style')),
                      variable.name="Growth")
 ggplot(final_num, aes(Category, value, fill=Growth)) + 
-  geom_bar(position="dodge",stat="identity")
+  geom_bar(position="dodge",stat="identity") + 
+  geom_text(aes(label=value), position = position_dodge(0.9), vjust=-0.5, size=3.5) + scale_fill_brewer(palette="OrRd") +
+  theme_minimal()
+

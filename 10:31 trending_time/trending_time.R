@@ -1,6 +1,9 @@
 library(lubridate)
 library(dplyr)
 library(readr)
+library(ggplot2)
+library(reshape2)
+library(wesanderson)
 
 df <- read.csv('USvideos.csv')
 data <- mutate(df, formatted_trending_date = ydm(trending_date))
@@ -35,29 +38,22 @@ for (id in pop_list){
 colnames(df_growth) <- c('video_id', 'category','trending_days', 'Glikes', 'Gcomments', 'Gviews', 'GLikeRatio')
 
 df_24 <- filter(df_growth, category == 24)
-d <- aggregate(df_24[, 3:6], list(df_24$video_id), min)
-mean(d$Gviews, na.rm = TRUE)
-cor(d$trending_days, d$GlikeRatio, use = "complete.obs")
-
-df_23 <- filter(df_growth, category == 23)
-d <- aggregate(df_23[, 3:6], list(df_23$video_id), min)
-mean(d$Gviews, na.rm = TRUE)
-mean(d$Glikes, na.rm = TRUE)
+d_24 <- aggregate(df_24[, 3:6], list(df_24$video_id), min)
+Gviews24 <- mean(d_24$Gviews, na.rm = TRUE)
+Glikes24 <- mean(d_24$Glikes, na.rm = TRUE)
 
 df_10 <- filter(df_growth, category == 10)
-d <- aggregate(df_10[, 3:6], list(df_10$video_id), min)
-mean(d$Gviews, na.rm = TRUE)
-mean(d$Glikes, na.rm = TRUE)
+d_10 <- aggregate(df_10[, 3:6], list(df_10$video_id), min)
+Gviews10 <- mean(d_10$Gviews, na.rm = TRUE)
+Glikes10 <- mean(d_10$Glikes, na.rm = TRUE)
 
 df_26 <- filter(df_growth, category == 26)
-d <- aggregate(df_26[, 3:6], list(df_26$video_id), min)
-mean(d$Gviews, na.rm = TRUE)
-mean(d$Glikes, na.rm = TRUE)
+d_26 <- aggregate(df_26[, 3:6], list(df_26$video_id), min)
+Gviews26 <- mean(d_26$Gviews, na.rm = TRUE)
+Glikes26 <- mean(d_26$Glikes, na.rm = TRUE)
 
-plot(seq(1:13), df_g$Glikes, type="l")
-lines(seq(1:13), df_c$Gviews, col = 'blue')
-lines(seq(1:9),df_g$Gviews, col="red")
-lines(seq(1:9),df_g$Gcomments, col="green")
-lines(seq(1:13), df_c$Glikes, type="o")
-lines(seq(1:13), df_c$Gviews, col = 'black')
-lines(seq(1:13),df_c$Gcomments, col="purple")
+final_num = melt(data.frame('Growth in Views'= c(Gviews24, Gviews10, Gviews26)*100, 'Growth in Likes'= c(Glikes24, Glikes10, Glikes26)*100,
+                     Category=c('Entertainment', 'Music', 'Howto&Style')),
+                     variable.name="Growth")
+ggplot(final_num, aes(Category, value, fill=Growth)) + 
+  geom_bar(position="dodge",stat="identity")
